@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Neurotoxin.ScOut.Models;
 
@@ -15,7 +16,7 @@ namespace Neurotoxin.ScOut.Mappers
             _methodMapper = methodMapper;
         }
 
-        public Class Map(ClassDeclarationSyntax syntax, string @namespace)
+        public Class Map(ClassDeclarationSyntax syntax, string @namespace, SemanticModel model)
         {
             var name = syntax.Identifier.ToString();
             if (syntax.TypeParameterList != null)
@@ -25,7 +26,8 @@ namespace Neurotoxin.ScOut.Mappers
             var cls = new Class
             {
                 Name = name,
-                Namespace = @namespace
+                Namespace = @namespace,
+                Model = model,
             };
             cls.Properties = syntax.ChildNodes().OfType<PropertyDeclarationSyntax>().Select(s => _propertyMapper.Map(s, cls)).Where(p => p != null).ToDictionary(p => p.Name, p => p);
             cls.Methods = syntax.ChildNodes().OfType<MethodDeclarationSyntax>().Select(s => _methodMapper.Map(s, cls)).GroupBy(m => m.Name).ToDictionary(m => m.Key, m => m.ToArray());

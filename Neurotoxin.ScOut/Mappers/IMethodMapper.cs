@@ -5,6 +5,6 @@ namespace Neurotoxin.ScOut.Mappers
 {
     public interface IMethodMapper
     {
-        Method Map(MethodDeclarationSyntax syntax, Class parent);
+        Method Map(MethodDeclarationSyntax declaration, Class parent);
     }
 }

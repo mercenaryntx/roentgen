@@ -1,11 +1,14 @@
-﻿namespace Neurotoxin.ScOut.Models
+﻿using Microsoft.CodeAnalysis;
+
+namespace Neurotoxin.ScOut.Models
 {
     public abstract class Member
     {
         public Class ParentClass { get; set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public virtual string FullName => $"{ParentClass.FullName}.{Name}";
+
+        public abstract string Name { get; }
+        public abstract string FullName { get; }
+        public abstract string Type { get; }
 
         public override string ToString() => Name;
     }

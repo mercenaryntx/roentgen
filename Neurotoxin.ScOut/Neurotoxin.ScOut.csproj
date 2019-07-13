@@ -136,7 +136,6 @@
     <Compile Include="Autofac\ScOutModule.cs" />
     <Compile Include="Filtering\DefaultSourceFileFiltering.cs" />
     <Compile Include="Filtering\ISourceFileFiltering.cs" />
-    <Compile Include="Mappers\CallMapper.cs" />
     <Compile Include="Mappers\ClassMapper.cs" />
     <Compile Include="Mappers\IClassMapper.cs" />
     <Compile Include="Mappers\IMapper.cs" />
@@ -152,7 +151,6 @@
     <Compile Include="Mappers\UsingMapper.cs" />
     <Compile Include="Models\Accessor.cs" />
     <Compile Include="Models\Argument.cs" />
-    <Compile Include="Models\Call.cs" />
     <Compile Include="Models\Class.cs" />
     <Compile Include="Models\Member.cs" />
     <Compile Include="Models\Method.cs" />

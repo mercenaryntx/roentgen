@@ -30,10 +30,10 @@ namespace Neurotoxin.ScOut
             var workspace = MSBuildWorkspace.Create();
             var sln = workspace.OpenSolutionAsync(path).GetAwaiter().GetResult();
             //TODO: logger
-            foreach (var log in workspace.Diagnostics.Where(d => d.Kind == WorkspaceDiagnosticKind.Failure))
-            {
-                Console.WriteLine(log);
-            }
+            //foreach (var log in workspace.Diagnostics.Where(d => d.Kind == WorkspaceDiagnosticKind.Failure))
+            //{
+            //    Console.WriteLine(log);
+            //}
             _solution = _solutionMapper.Map(sln);
             return this;
         }
@@ -41,26 +41,45 @@ namespace Neurotoxin.ScOut
         public Solution Analyze()
         {
             _memberCollection = _solution.Classes.SelectMany(c => c.Value.Properties.Values.Cast<Member>().Concat(c.Value.Methods.SelectMany(m => m.Value))).ToDictionary(m => m.FullName, m => m);
-
             foreach (var method in _solution.Classes.SelectMany(c => c.Value.Methods.SelectMany(m => m.Value)))
             {
-                PopulateMethodDependencies(method);
-            }
+                Console.WriteLine(method.Symbol);
 
-            foreach (var property in _solution.Classes.SelectMany(c => c.Value.Properties.Values))
-            {
-                if (property.Getter != null) PopulateMethodDependencies(property.Getter);
-                if (property.Setter != null) PopulateMethodDependencies(property.Setter);
+                foreach (var invocation in method.Declaration.DescendantNodes().OfType<InvocationExpressionSyntax>())
+                {
+                    var inv = method.ParentClass.Model.GetSymbolInfo(invocation);
+                    Console.WriteLine($"[{_memberCollection.ContainsKey(inv.Symbol.ToString())}]  {inv.Symbol}");
+                }
             }
             return _solution;
         }
 
+        //public Solution Analyze()
+        //{
+        //    _memberCollection = _solution.Classes.SelectMany(c => c.Value.Properties.Values.Cast<Member>().Concat(c.Value.Methods.SelectMany(m => m.Value))).ToDictionary(m => m.FullName, m => m);
+
+        //    foreach (var method in _solution.Classes.SelectMany(c => c.Value.Methods.SelectMany(m => m.Value)))
+        //    {
+        //        PopulateMethodDependencies(method);
+        //    }
+
+        //    foreach (var property in _solution.Classes.SelectMany(c => c.Value.Properties.Values))
+        //    {
+        //        if (property.Getter != null) PopulateMethodDependencies(property.Getter);
+        //        if (property.Setter != null) PopulateMethodDependencies(property.Setter);
+        //    }
+        //    return _solution;
+        //}
+
         public void PopulateMethodDependencies(Method method)
         {
-            foreach (var call in method.Calls)
-            {
-                call.Target = TryToIdentifyMethodCall(method, call.Ref);
-            }
+            //var sym = method.ParentClass.Model.GetDeclaredSymbol(method.Declaration);
+
+
+            //foreach (var call in method.Calls)
+            //{
+            //    call.Target = TryToIdentifyMethodCall(method, call.Ref);
+            //}
         }
 
         private Method TryToIdentifyMethodCall(Method source, InvocationExpressionSyntax syntax)

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace Neurotoxin.ScOut.Models
 {
     public class Class
     {
+        public SemanticModel Model { get; set; }
         public string[] SourceFiles { get; set; }
         public Using[] Usings { get; set; }
         public string Name { get; set; }
