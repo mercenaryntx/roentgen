@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynDemo", "RoslynDemo\RoslynDemo.csproj", "{CCF43F8B-F413-4E26-ABC3-2BCF536C74EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neurotoxin.ScOut", "Neurotoxin.ScOut\Neurotoxin.ScOut.csproj", "{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCF43F8B-F413-4E26-ABC3-2BCF536C74EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCF43F8B-F413-4E26-ABC3-2BCF536C74EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCF43F8B-F413-4E26-ABC3-2BCF536C74EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCF43F8B-F413-4E26-ABC3-2BCF536C74EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BDA1BFE5-E162-4610-800C-815B35C2000F}
+	EndGlobalSection
+EndGlobal
