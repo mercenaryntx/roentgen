@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Neurotoxin.ScOut.Mappers;
 using Neurotoxin.ScOut.Models;
 
@@ -16,7 +15,6 @@ namespace Neurotoxin.ScOut.Autofac
             builder.RegisterType<SolutionMapper>().As<IMapper<Microsoft.CodeAnalysis.Solution, Solution>>().SingleInstance();
             builder.RegisterType<SourceFileMapper>().As<ISourceFileMapper>().SingleInstance();
             builder.RegisterType<TargetFrameworkMapper>().As<ITargetFrameworkMapper>().SingleInstance();
-            builder.RegisterType<UsingMapper>().As<IMapper<UsingDirectiveSyntax, Using>>().SingleInstance();
 
             builder.RegisterType<RoslynAnalyzer>();
         }

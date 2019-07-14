@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -46,7 +47,6 @@ namespace Neurotoxin.ScOut.Mappers
                                     {
                                         Class = c,
                                         File = file.Path,
-                                        file.Usings
                                     }))
                               .GroupBy(t => t.Class.FullName)
                               .Select(g =>
@@ -55,17 +55,14 @@ namespace Neurotoxin.ScOut.Mappers
                                       var fc = first.Class;
                                       if (g.Count() == 1)
                                       {
-                                          fc.Usings = first.Usings;
                                           fc.SourceFiles = new[] {first.File};
                                           return fc;
                                       }
                                       return new Class
                                       {
-                                          Name = fc.Name,
-                                          Namespace = fc.Namespace,
                                           Model = fc.Model,
                                           SourceFiles = g.Select(v => v.File).ToArray(),
-                                          Usings = g.SelectMany(v => v.Usings).ToArray(),
+                                          Symbols = g.Select(v => v.Class.Symbol).ToArray(),
                                           Properties = g.SelectMany(v => v.Class.Properties).ToDictionary(p => p.Key, p => p.Value),
                                           Methods = g.SelectMany(v => v.Class.Methods.SelectMany(m => m.Value)).GroupBy(m => m.Name).ToDictionary(gg => gg.Key, gg => gg.ToArray())
                                       };

@@ -3,7 +3,6 @@
     public class SourceFile
     {
         public string Path { get; set; }
-        public Using[] Usings { get; set; }
         public Class[] Classes { get; set; }
 
         public override string ToString() => Path;

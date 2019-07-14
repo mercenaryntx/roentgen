@@ -16,6 +16,7 @@ namespace RoslynDemo
             var builder = new ContainerBuilder();
             builder.RegisterType<Application>();
             builder.RegisterType<DefaultSourceFileFiltering>().As<ISourceFileFiltering>().SingleInstance();
+            builder.RegisterType<DefaultDependencyFiltering>().As<IDependencyFiltering>().SingleInstance();
             builder.RegisterModule<ScOutModule>();
             return builder.Build();
         }

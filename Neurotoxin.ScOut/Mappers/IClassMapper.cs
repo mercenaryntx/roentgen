@@ -6,6 +6,6 @@ namespace Neurotoxin.ScOut.Mappers
 {
     public interface IClassMapper
     {
-        Class Map(ClassDeclarationSyntax syntax, string @namespace, SemanticModel model);
+        Class Map(ClassDeclarationSyntax syntax, SemanticModel model);
     }
 }
