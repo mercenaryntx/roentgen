@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -46,7 +45,7 @@ namespace Neurotoxin.ScOut.Mappers
             return sourceFiles.SelectMany(file => file.Classes.Select(c => new
                                     {
                                         Class = c,
-                                        File = file.Path,
+                                        File = file,
                                     }))
                               .GroupBy(t => t.Class.FullName)
                               .Select(g =>
@@ -55,13 +54,17 @@ namespace Neurotoxin.ScOut.Mappers
                                       var fc = first.Class;
                                       if (g.Count() == 1)
                                       {
-                                          fc.SourceFiles = new[] {first.File};
+                                          fc.SourceFiles = new[] { first.File.Path };
+                                          fc.IsGenerated = first.File.IsGenerated;
                                           return fc;
                                       }
                                       return new Class
                                       {
                                           Model = fc.Model,
-                                          SourceFiles = g.Select(v => v.File).ToArray(),
+                                          Length = g.Sum(v => v.Class.Length),
+                                          Loc = g.Sum(v => v.Class.Length),
+                                          IsGenerated = g.Any(v => v.File.IsGenerated),
+                                          SourceFiles = g.Select(v => v.File.Path).ToArray(),
                                           Symbols = g.Select(v => v.Class.Symbol).ToArray(),
                                           Properties = g.SelectMany(v => v.Class.Properties).ToDictionary(p => p.Key, p => p.Value),
                                           Methods = g.SelectMany(v => v.Class.Methods.SelectMany(m => m.Value)).GroupBy(m => m.Name).ToDictionary(gg => gg.Key, gg => gg.ToArray())
@@ -72,15 +75,13 @@ namespace Neurotoxin.ScOut.Mappers
 
         private bool Included(SyntaxTree tree)
         {
-            var fileName = Path.GetFileName(tree.FilePath);
-            return _includeRules.Values.Any(r => new Regex(r).IsMatch(fileName));
+            return _includeRules.Values.Any(r => new Regex(r).IsMatch(tree.FilePath));
         }
 
 
         private bool NotExcluded(SyntaxTree tree)
         {
-            var fileName = Path.GetFileName(tree.FilePath);
-            return _excludeRules.Values.All(r => !new Regex(r).IsMatch(fileName));
+            return _excludeRules.Values.All(r => !new Regex(r).IsMatch(tree.FilePath));
         }
 
     }

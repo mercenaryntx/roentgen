@@ -21,6 +21,11 @@ namespace Neurotoxin.ScOut
 
         private Solution _solution;
 
+        static RoslynAnalyzer()
+        {
+            MSBuildLocator.RegisterDefaults();
+        }
+
         public RoslynAnalyzer(IMapper<Microsoft.CodeAnalysis.Solution, Solution> solutionMapper, IDependencyFiltering dependencyFiltering)
         {
             _solutionMapper = solutionMapper;
@@ -29,7 +34,6 @@ namespace Neurotoxin.ScOut
 
         public RoslynAnalyzer LoadSolution(string path)
         {
-            MSBuildLocator.RegisterDefaults();
             var workspace = MSBuildWorkspace.Create();
             var sln = workspace.OpenSolutionAsync(path).GetAwaiter().GetResult();
             //TODO: logger
@@ -78,10 +82,13 @@ namespace Neurotoxin.ScOut
                             var methodInfo = callSymbol.ToString().Replace(declaringTypeSymbol.ToString(), string.Empty);
                             foreach (var implementation in interfaces[declaringTypeSymbol.ToString()])
                             {
-                                var implementedMethod = implementation.Methods.SelectMany(m => m.Value).SingleOrDefault(m => m.FullName == $"{implementation.FullName}{methodInfo}");
+                                var target = $"{implementation.FullName}{methodInfo}";
+                                var implementedMethod = implementation.Methods.SelectMany(m => m.Value).SingleOrDefault(m => m.FullName == target);
                                 if (implementedMethod == null)
                                 {
-                                    Debugger.Break();
+                                    //TODO: log
+                                    Console.WriteLine($"[Warning] Can't find {target}. Call ignored.");
+                                    continue;
                                 }
                                 implementedMethod.Callers.Add(method);
                                 method.InternalCalls.Add(new MethodCall(method, invocation, callSymbol.OriginalDefinition, implementedMethod));

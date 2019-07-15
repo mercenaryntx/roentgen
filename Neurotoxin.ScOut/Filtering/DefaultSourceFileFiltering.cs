@@ -11,8 +11,10 @@ namespace Neurotoxin.ScOut.Filtering
 
         public Dictionary<string, string> ExcludeRules { get; } = new Dictionary<string, string>
         {
-            { "AssemblyInfo", "AssemblyInfo.cs" },
-            { "AssemblyAttributes", @"[^\w]AssemblyAttributes.cs$" }
+            { "AssemblyInfo", "AssemblyInfo.cs$" },
+            { "AssemblyAttributes", @"[^\w]AssemblyAttributes.cs$" },
+            { "Settings", @"Settings.Designer.cs$" },
+            { "Service Reference", @" References\\.*?\\Reference.cs$" }
         };
     }
 }

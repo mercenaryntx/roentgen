@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Neurotoxin.ScOut.Models;
@@ -9,12 +10,16 @@ namespace Neurotoxin.ScOut.Mappers
     {
         public Method Map(MethodDeclarationSyntax declaration, Class parentClass)
         {
+            var code = declaration.ToString();
+            var r = new Regex("\r\n");
             var symbol = parentClass.Model.GetDeclaredSymbol(declaration);
             return new Method
             {
                 Declaration = declaration,
                 ParentClass = parentClass,
-                Symbol = symbol
+                Symbol = symbol,
+                Length = code.Length,
+                Loc = r.Split(code.Trim()).Length
             };
         }
 

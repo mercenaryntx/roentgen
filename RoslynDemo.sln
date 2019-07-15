@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynDemo", "RoslynDemo\Ro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neurotoxin.ScOut", "Neurotoxin.ScOut\Neurotoxin.ScOut.csproj", "{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neurotoxin.ScOut.Data", "Neurotoxin.ScOut.Data\Neurotoxin.ScOut.Data.csproj", "{0C950F50-E198-4704-9085-3853506B5C0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C950F50-E198-4704-9085-3853506B5C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C950F50-E198-4704-9085-3853506B5C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C950F50-E198-4704-9085-3853506B5C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C950F50-E198-4704-9085-3853506B5C0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

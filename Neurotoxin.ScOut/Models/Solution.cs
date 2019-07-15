@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Neurotoxin.ScOut.Models
@@ -13,7 +14,10 @@ namespace Neurotoxin.ScOut.Models
             get
             {
                 //HACK
-                return Projects.SelectMany(p => p.Classes).Where(c => !c.Key.StartsWith("XamlGeneratedNamespace")).ToDictionary(c => c.Key, c => c.Value);
+                var q = Projects.SelectMany(p => p.Classes).Where(c => !c.Key.StartsWith("XamlGeneratedNamespace"));
+                var x = q.GroupBy(c => c.Key).Where(g => g.Count() > 1).ToDictionary(g => g.Key, g => g.ToArray());
+                if (x.Any()) Debugger.Break();
+                return q.ToDictionary(c => c.Key, c => c.Value);
             }
         }
 

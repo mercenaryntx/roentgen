@@ -4,6 +4,7 @@
     {
         public string Path { get; set; }
         public Class[] Classes { get; set; }
+        public bool IsGenerated { get; set; }
 
         public override string ToString() => Path;
     }

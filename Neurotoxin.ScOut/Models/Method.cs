@@ -15,6 +15,9 @@ namespace Neurotoxin.ScOut.Models
         public string Name => Symbol.Name;
         public string FullName => Symbol.ToString();
 
+        public int Length { get; set; }
+        public int Loc { get; set; }
+
         public List<Method> Callers { get; } = new List<Method>();
         public List<MethodCall> InternalCalls { get; } = new List<MethodCall>();
         public List<MethodCall> ExternalCalls { get; } = new List<MethodCall>();

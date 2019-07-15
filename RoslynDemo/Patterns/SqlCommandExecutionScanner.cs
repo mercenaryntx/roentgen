@@ -23,7 +23,7 @@ namespace RoslynDemo.Patterns
         public string Scan(MethodCall call)
         {
             var result = new List<string>();
-            Console.WriteLine(call.Caller.ToString());
+            //Console.WriteLine(call.Caller.ToString());
 
             var variableIdentifer = ((IdentifierNameSyntax)((MemberAccessExpressionSyntax)call.Invocation.Expression).Expression).Identifier;
             var cmdVariable = VariableSearch(call.Invocation, variableIdentifer);
@@ -31,14 +31,24 @@ namespace RoslynDemo.Patterns
             switch (cmdVariable)
             {
                 case ObjectCreationExpressionSyntax objectCreation:
-                    if (objectCreation.ArgumentList.Arguments.First().Expression is IdentifierNameSyntax firstArg)
+                    if (!objectCreation.ArgumentList.Arguments.Any())
                     {
-                        var x = FindLiteral(cmdVariable, firstArg.Identifier, call.Caller);
-                        if (x != null) result.AddRange(x);
+                        //TODO: support parameterless commands
+                        break;
                     }
-                    else
+                    var firstArg = objectCreation.ArgumentList.Arguments.First().Expression;
+                    switch (firstArg)
                     {
-                        Debugger.Break();
+                        case IdentifierNameSyntax identifier:
+                            var x = FindLiteral(cmdVariable, identifier.Identifier, call.Caller);
+                            if (x != null) result.AddRange(x);
+                            break;
+                        case LiteralExpressionSyntax literalExpression:
+                            result.Add(literalExpression.Token.ValueText);
+                            break;
+                        default:
+                            Debugger.Break();
+                            break;
                     }
                     break;
                 default:
@@ -71,7 +81,10 @@ namespace RoslynDemo.Patterns
                 case IdentifierNameSyntax identifier:
                     return FindLiteral(node, identifier.Identifier, context);
                 case ParameterSyntax parameter:
+                    //TODO: doesn't support `params` arg
                     var parameterIndex = context.Declaration.ParameterList.Parameters.IndexOf(parameter);
+                    if (parameterIndex == -1) return new string[0];
+
                     foreach (var caller in context.Callers)
                     {
                         foreach (var internalCall in caller.InternalCalls.Where(ic => ic.Callee == context))
@@ -97,8 +110,9 @@ namespace RoslynDemo.Patterns
                         var secondArg = (IdentifierNameSyntax)invocationExpression.ArgumentList.Arguments[1].Expression;
                         return FindLiteral(node, secondArg.Identifier, context);
                     }
-                    Debugger.Break();
-                    break;
+                    //TODO: log
+                    Console.WriteLine("Can't parse InvocationExpression: " + invocationExpression);
+                    return new string[0];
                 case CastExpressionSyntax cast:
                     return GetLiteral(cast.Expression, context);
                 default:

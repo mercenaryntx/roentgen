@@ -19,6 +19,10 @@ namespace Neurotoxin.ScOut.Models
 
         public string Name => Symbol.Name;
         public string FullName => Symbol.ToString();
+        
+        public int Length { get; set; }
+        public int Loc { get; set; }
+        public bool IsGenerated { get; set; }
 
         public string[] Implements => Symbols.SelectMany(s => s.AllInterfaces).Select(i => i.ToString()).Distinct().ToArray();
 
