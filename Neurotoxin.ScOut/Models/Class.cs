@@ -1,34 +1,25 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace Neurotoxin.ScOut.Models
 {
-    public class Class
+    public class Class : CodePart
     {
-        public SemanticModel Model { get; set; }
+        public Dictionary<string, Property> Properties => Children.OfType<Property>().ToDictionary(p => p.Name, p => p);
+        public Dictionary<string, Method[]> Methods => Children.OfType<Method>().GroupBy(m => m.Name).ToDictionary(g => g.Key, g => g.ToArray());
+        public Class[] Subclasses => Children.OfType<Class>().ToArray();
+        public string[] Implements { get; private set; }
 
         public string[] SourceFiles { get; set; }
-        public INamedTypeSymbol[] Symbols { get; set; }
-        public INamedTypeSymbol Symbol
-        {
-            get => Symbols[0];
-            set => Symbols = new[] {value};
-        }
-
-        public string Name => Symbol.Name;
-        public string FullName => Symbol.ToString();
-        
-        public int Length { get; set; }
-        public int Loc { get; set; }
         public bool IsGenerated { get; set; }
 
-        public string[] Implements => Symbols.SelectMany(s => s.AllInterfaces).Select(i => i.ToString()).Distinct().ToArray();
-
-        public Dictionary<string, Property> Properties { get; set; }
-        public Dictionary<string, Method[]> Methods { get; set; }
-
         public override string ToString() => FullName;
+
+        protected override void ParseFromSymbol(ISymbol symbol)
+        {
+            base.ParseFromSymbol(symbol);
+            Implements = ((INamedTypeSymbol)symbol).AllInterfaces.Select(i => i.ToString()).ToArray();
+        }
     }
 }

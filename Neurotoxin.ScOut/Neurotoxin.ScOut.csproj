@@ -132,6 +132,8 @@
   <ItemGroup>
     <Compile Include="Analysis\AnalysisResult.cs" />
     <Compile Include="Autofac\ScOutModule.cs" />
+    <Compile Include="Discovery.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\SyntaxExtensions.cs" />
     <Compile Include="ExternalDepencencyAnalyzer.cs" />
     <Compile Include="Filtering\DefaultDependencyFiltering.cs" />
@@ -151,6 +153,7 @@
     <Compile Include="Mappers\SourceFileMapper.cs" />
     <Compile Include="Mappers\TargetFrameworkMapper.cs" />
     <Compile Include="Models\Class.cs" />
+    <Compile Include="Models\CodePart.cs" />
     <Compile Include="Models\MethodCall.cs" />
     <Compile Include="Models\Method.cs" />
     <Compile Include="Models\Project.cs" />
@@ -161,10 +164,22 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoslynAnalyzer.cs" />
+    <Compile Include="RoslynAnalyzerOld.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="Visitors\FindLiteralVisitor.cs" />
+    <Compile Include="Visitors\FindVariableVisitor.cs" />
+    <Compile Include="Visitors\SourceFileVisitor.cs" />
+    <Compile Include="Visitors\VisitorBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Neurotoxin.ScOut.Data\Neurotoxin.ScOut.Data.csproj">
+      <Project>{0c950f50-e198-4704-9085-3853506b5c0f}</Project>
+      <Name>Neurotoxin.ScOut.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

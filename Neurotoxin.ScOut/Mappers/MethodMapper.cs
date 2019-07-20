@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,17 +11,18 @@ namespace Neurotoxin.ScOut.Mappers
     {
         public Method Map(MethodDeclarationSyntax declaration, Class parentClass)
         {
-            var code = declaration.ToString();
-            var r = new Regex("\r\n");
-            var symbol = parentClass.Model.GetDeclaredSymbol(declaration);
-            return new Method
-            {
-                Declaration = declaration,
-                ParentClass = parentClass,
-                Symbol = symbol,
-                Length = code.Length,
-                Loc = r.Split(code.Trim()).Length
-            };
+            throw new NotSupportedException();
+            //var code = declaration.ToString();
+            //var r = new Regex("\r\n");
+            //var symbol = parentClass.Model.GetDeclaredSymbol(declaration);
+            //return new Method
+            //{
+            //    Declaration = declaration,
+            //    ParentClass = parentClass,
+            //    Symbol = symbol,
+            //    Length = code.Length,
+            //    Loc = r.Split(code.Trim()).Length
+            //};
         }
 
         //private Argument Map(ParameterSyntax syntax) => new Argument

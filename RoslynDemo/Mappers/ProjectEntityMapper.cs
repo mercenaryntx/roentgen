@@ -14,8 +14,7 @@ namespace RoslynDemo.Mappers
     {
         public ProjectEntity Map(Project input) => new ProjectEntity
         {
-            Name = Path.GetFileName(input.Path),
-            ProjectPath = input.Path,
+            Path = input.Path,
             Language = input.LanguageVersion,
             TargetFramework = input.TargetFramework
         };

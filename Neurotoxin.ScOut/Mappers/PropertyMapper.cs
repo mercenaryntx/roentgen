@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Neurotoxin.ScOut.Models;
@@ -12,20 +13,22 @@ namespace Neurotoxin.ScOut.Mappers
             //TODO: temporary removal
             if (declaration.ExplicitInterfaceSpecifier != null) return null;
 
+            throw new NotSupportedException();
+
             //var accessors = syntax.DescendantNodes().OfType<AccessorListSyntax>().Single().Accessors;
             //var getter = accessors.SingleOrDefault(a => a.Kind() == SyntaxKind.GetAccessorDeclaration);
             //var setter = accessors.SingleOrDefault(a => a.Kind() == SyntaxKind.SetAccessorDeclaration);
-            var symbol = parentClass.Model.GetDeclaredSymbol(declaration);
-            var prop = new Property
-            {
-                ParentClass = parentClass,
-                Symbol = symbol
-                //Name = syntax.Identifier.ToString(),
-                //Type = syntax.Type.ToFullString()
-            };
+            //var symbol = parentClass.Model.GetDeclaredSymbol(declaration);
+            //var prop = new Property
+            //{
+            //    ParentClass = parentClass,
+            //    Symbol = symbol
+            //    //Name = syntax.Identifier.ToString(),
+            //    //Type = syntax.Type.ToFullString()
+            //};
             //if (getter != null) prop.Getter = Map(getter, prop);
             //if (setter != null) prop.Setter = Map(setter, prop);
-            return prop;
+            //return prop;
         }
 
         //private Accessor Map(AccessorDeclarationSyntax declaration, Property parentProperty) => new Accessor

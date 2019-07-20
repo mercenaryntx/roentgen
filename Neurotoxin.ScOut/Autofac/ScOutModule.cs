@@ -16,6 +16,7 @@ namespace Neurotoxin.ScOut.Autofac
             builder.RegisterType<SourceFileMapper>().As<ISourceFileMapper>().SingleInstance();
             builder.RegisterType<TargetFrameworkMapper>().As<ITargetFrameworkMapper>().SingleInstance();
 
+            builder.RegisterType<RoslynAnalyzerOld>();
             builder.RegisterType<RoslynAnalyzer>();
         }
     }

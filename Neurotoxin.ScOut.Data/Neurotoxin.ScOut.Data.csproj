@@ -73,6 +73,7 @@
     <Compile Include="Entities\DatabaseEntity.cs" />
     <Compile Include="Entities\DataContractEntity.cs" />
     <Compile Include="Entities\EntityBase.cs" />
+    <Compile Include="Entities\FileEntityBase.cs" />
     <Compile Include="Entities\IEntityBase.cs" />
     <Compile Include="Entities\MessageEntity.cs" />
     <Compile Include="Entities\MethodEntity.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Entities\ServiceEntity.cs" />
     <Compile Include="Entities\SolutionEntity.cs" />
     <Compile Include="Entities\SourceControlEntity.cs" />
+    <Compile Include="Entities\SourceFileEntity.cs" />
     <Compile Include="Entities\StoredProcedureEntity.cs" />
     <Compile Include="Entities\SystemEntity.cs" />
     <Compile Include="Entities\TableEntity.cs" />
