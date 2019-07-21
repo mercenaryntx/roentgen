@@ -40,7 +40,14 @@ namespace Neurotoxin.ScOut.Visitors
 
             if (!(parameterList?.Parent is MethodDeclarationSyntax methodDeclaration) || !_invocations.ContainsKey(methodDeclaration)) return null;
             return _invocations[methodDeclaration]
-                    .Select(call => call.ArgumentList.Arguments[parameterIndex].Expression).Where(p => p != null)
+                    .Select(call =>
+                {
+                    //TODO: Remove
+                    var m = methodDeclaration;
+                    var n = node;
+                    if (call.ArgumentList.Arguments.Count <= parameterIndex) Debugger.Break();
+                    return call.ArgumentList.Arguments[parameterIndex].Expression;
+                }).Where(p => p != null)
                     .SelectMany(Visit);
         }
 

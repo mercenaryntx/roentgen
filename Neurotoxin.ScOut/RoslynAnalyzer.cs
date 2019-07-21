@@ -1,32 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using Autofac;
+using Autofac.Core;
 using Microsoft.Build.Locator;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.MSBuild;
 using Neurotoxin.ScOut.Analysis;
 using Neurotoxin.ScOut.Extensions;
-using Neurotoxin.ScOut.Models;
-using Neurotoxin.ScOut.Visitors;
-using Project = Neurotoxin.ScOut.Models.Project;
-using Solution = Neurotoxin.ScOut.Models.Solution;
+using Neurotoxin.ScOut.Mappers;
 
 namespace Neurotoxin.ScOut
 {
     public class RoslynAnalyzer
     {
         private readonly List<string> _solutions = new List<string>();
-        private  readonly List<string> _excludeFiles = new List<string>
-        { 
-            @"AssemblyInfo.cs$",
-            @"[^\w]AssemblyAttributes.cs$",
-            @"Settings.Designer.cs$",
-            @" References\\.*?\\Reference.cs$" //TODO: temporary filtering only
-        };
+        private readonly ExcludingRules _excludingRules = new ExcludingRules();
+        private readonly ContainerBuilder _containerBuilder = new ContainerBuilder();
 
         static RoslynAnalyzer()
         {
@@ -47,86 +35,55 @@ namespace Neurotoxin.ScOut
 
         public RoslynAnalyzer ExcludeFiles(params string[] rule)
         {
-            _excludeFiles.AddRange(rule);
+            _excludingRules.ExcludeFiles.AddRange(rule);
+            return this;
+        }
+
+        public RoslynAnalyzer RegisterWorkspace<T>() where T : AnalysisWorkspace
+        {
+            _containerBuilder.RegisterType<T>().As<AnalysisWorkspace>().SingleInstance();
+            return this;
+        }
+
+        public RoslynAnalyzer RegisterPostProcessor<T>() where T : PostProcessor
+        {
+            _containerBuilder.RegisterType<T>();
             return this;
         }
 
         public AnalysisResult Analyze()
         {
-            var result = new AnalysisResult
+            var container = BuildContainer();
+
+            var solutionMapper = container.Resolve<ISolutionMapper>();
+            _solutions.ForEach(s => solutionMapper.Map(s));
+
+            var postProcessorType = typeof(PostProcessor);
+            container.ComponentRegistry
+                     .Registrations
+                     .Select(r => r.Services.First())
+                     .OfType<TypedService>()
+                     .Select(s => s.ServiceType)
+                     .Where(t => postProcessorType.IsAssignableFrom(t))
+                     .Select(t => container.Resolve(t))
+                     .Cast<PostProcessor>()
+                     .ForEach(pp => pp.Process());
+
+            var workspace = container.Resolve<AnalysisWorkspace>();
+            return new AnalysisResult
             {
-                Solutions = _solutions.Select(MapSolution).ToArray()
+                Solutions = workspace.Solutions.Values.ToArray(),
+                Links = workspace.Links.ToArray()
             };
-            return result;
         }
 
-        private Solution MapSolution(string path)
+        private IContainer BuildContainer()
         {
-            var workspace = MSBuildWorkspace.Create();
-            var sln = workspace.OpenSolutionAsync(path).GetAwaiter().GetResult();
-            //TODO: logger
-            //foreach (var log in workspace.Diagnostics.Where(d => d.Kind == WorkspaceDiagnosticKind.Failure))
-            //{
-            //    Console.WriteLine(log);
-            //}
-            return new Solution
-            {
-                Path = sln.FilePath,
-                Projects = sln.Projects.Select(MapProject).ToArray()
-            };
+            _containerBuilder.RegisterType<AnalysisWorkspace>().As<AnalysisWorkspace>().SingleInstance().IfNotRegistered(typeof(AnalysisWorkspace));
+            _containerBuilder.RegisterType<SolutionMapper>().As<ISolutionMapper>().SingleInstance().IfNotRegistered(typeof(ISolutionMapper));
+            _containerBuilder.RegisterType<ProjectMapper>().As<IProjectMapper>().SingleInstance().IfNotRegistered(typeof(IProjectMapper));
+            _containerBuilder.RegisterInstance(_excludingRules);
+            return _containerBuilder.Build();
         }
-
-        private Project MapProject(Microsoft.CodeAnalysis.Project proj)
-        {
-            var compilation = proj.GetCompilationAsync().GetAwaiter().GetResult();
-            var trees = compilation.SyntaxTrees.ToArray();
-            var sourceFiles = trees
-                .Where(t => Path.GetExtension(t.FilePath) == ".cs")
-                .Where(t => _excludeFiles.All(r => !new Regex(r).IsMatch(t.FilePath)));
-
-            var mscorlibVersion = new Regex(@"v([\d\.]+)\\.*?mscorlib\.dll$");
-            var project = new Project
-            {
-                Path = proj.FilePath,
-                Language = proj.Language,
-                LanguageVersion = proj.ParseOptions.Language,
-                TargetFramework = proj.MetadataReferences.Select(m => mscorlibVersion.Match(m.Display)).FirstOrDefault(m => m.Success)?.Groups[1].Value
-            };
-
-            if (string.IsNullOrEmpty(project.TargetFramework)) Debugger.Break();
-
-            foreach (var file in sourceFiles)
-            {
-                var visitor = new SourceFileVisitor();
-                var x = visitor.Discover(file, compilation).ToArray();
-            }
-
-            return new Project
-            {
-                Path = proj.FilePath,
-                Language = proj.Language,
-                LanguageVersion = proj.ParseOptions.Language,
-                //TargetFramework = GetTargetFramework(trees),
-                //Classes = sourceFiles.SelectMany(file =>
-                //{
-                //    var root = file.GetRootAsync().GetAwaiter().GetResult();
-                //    return root.FindNodes<ClassDeclarationSyntax>().Select(declaration => new
-                //    {
-                //        SourceFile = MapSourceFile(file),
-                //        ClassDeclaration = declaration
-                //    });
-                //}).GroupBy(a => a.ClassDeclaration.Identifier.ValueText).ToDictionary(g => g.Key, g => MapClass(g))
-            };
-        }
-
-        //private SourceFile MapSourceFile(SyntaxTree tree)
-        //{
-
-        //    return new SourceFile
-        //    {
-        //        Path = tree.FilePath,
-        //        IsGenerated = tree.ToString().Contains("<auto-generated>"),
-        //    };
-        //}
     }
 }

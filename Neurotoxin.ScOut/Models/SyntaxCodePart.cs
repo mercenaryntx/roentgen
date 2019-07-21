@@ -5,14 +5,14 @@ using Microsoft.CodeAnalysis;
 
 namespace Neurotoxin.ScOut.Models
 {
-    public abstract class CodePart
+    public abstract class SyntaxCodePart : ICodePart
     {
         public string Name { get; private set; }
         public string FullName { get; private set; }
-        public int Length { get; private set; }
-        public int Loc { get; private set; }
+        public int Length { get; protected set; }
+        public int Loc { get; protected set; }
 
-        public IEnumerable<CodePart> Children { get; set; }
+        public IList<ICodePart> Children { get; set; }
 
         public void Parse(SyntaxNode node, SemanticModel model)
         {
@@ -29,7 +29,7 @@ namespace Neurotoxin.ScOut.Models
             FullName = symbol.ToString();
         }
 
-        public static T Create<T>(SyntaxNode node, SemanticModel model) where T : CodePart, new()
+        public static T Create<T>(SyntaxNode node, SemanticModel model) where T : SyntaxCodePart, new()
         {
             var instance = new T();
             instance.Parse(node, model);

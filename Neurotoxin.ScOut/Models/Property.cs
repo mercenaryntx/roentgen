@@ -2,7 +2,7 @@
 
 namespace Neurotoxin.ScOut.Models
 {
-    public class Property : CodePart
+    public class Property : SyntaxCodePart
     {
     }
 }

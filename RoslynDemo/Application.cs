@@ -5,42 +5,13 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using Dapper;
 using Neurotoxin.ScOut;
-using Neurotoxin.ScOut.Analysis;
-using Neurotoxin.ScOut.Data;
-using Neurotoxin.ScOut.Data.DataAccess;
-using Neurotoxin.ScOut.Data.Entities;
-using Neurotoxin.ScOut.Data.Relations;
-using Neurotoxin.ScOut.Mappers;
-using Neurotoxin.ScOut.Models;
-using RoslynDemo.Extensions;
-using RoslynDemo.Patterns;
+using Neurotoxin.ScOut.Extensions;
 
 namespace RoslynDemo
 {
     public class Application
     {
-        private readonly RoslynAnalyzer _analyzer;
-        //private readonly IMapper<Solution, SolutionEntity> _solutionMapper;
-        //private readonly IMapper<Project, ProjectEntity> _projectMapper;
-        //private readonly IMapper<Class, ClassEntity> _classMapper;
-        //private readonly IMapper<Method, MethodEntity> _methodMapper;
-
-        public Application(RoslynAnalyzer analyzer)
-            //,
-            //IMapper<Solution, SolutionEntity> solutionMapper,
-            //IMapper<Project, ProjectEntity> projectMapper,
-            //IMapper<Class, ClassEntity> classMapper,
-            //IMapper<Method, MethodEntity> methodMapper)
-        {
-            _analyzer = analyzer;
-            //_solutionMapper = solutionMapper;
-            //_projectMapper = projectMapper;
-            //_classMapper = classMapper;
-            //_methodMapper = methodMapper;
-        }
-
         public void Run()
         {
             var sw = new Stopwatch();
@@ -66,7 +37,13 @@ namespace RoslynDemo
                 //@"e:\Work\EF\github\elektra-ls-capacitymanager\ResidenceCapacity\ResidenceCapacity.sln",
             };
 
-            var result = _analyzer.AddSolutions(solutions).Analyze();
+            var result = new RoslynAnalyzer()
+                .AddSolutions(solutions)
+                .RegisterPostProcessor<MethodInvocationsPostProcessor>()
+                .RegisterPostProcessor<SqlCommandExecutionPostProcessor>()
+                .Analyze();
+
+            result.Links.GroupBy(l => l.GetType()).ForEach(g => Console.WriteLine($"{g.Key} {g.Count()}"));
 
             //foreach (var path in solutions)
             //{

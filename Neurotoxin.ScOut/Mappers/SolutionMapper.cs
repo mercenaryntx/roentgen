@@ -1,21 +1,32 @@
 ﻿using System.Linq;
+using Microsoft.CodeAnalysis.MSBuild;
+using Neurotoxin.ScOut.Analysis;
 using Neurotoxin.ScOut.Models;
 
 namespace Neurotoxin.ScOut.Mappers
 {
-    public class SolutionMapper : IMapper<Microsoft.CodeAnalysis.Solution, Solution>
+    public class SolutionMapper : ISolutionMapper
     {
-        private readonly IMapper<Microsoft.CodeAnalysis.Project, Project> _projectMapper;
+        private readonly IProjectMapper _projectMapper;
+        private readonly AnalysisWorkspace _workspace;
 
-        public SolutionMapper(IMapper<Microsoft.CodeAnalysis.Project, Project> projectMapper)
+        public SolutionMapper(IProjectMapper projectMapper, AnalysisWorkspace workspace)
         {
             _projectMapper = projectMapper;
+            _workspace = workspace;
         }
 
-        public Solution Map(Microsoft.CodeAnalysis.Solution sln) => new Solution
+        public Solution Map(string path)
         {
-            Path = sln.FilePath,
-            Projects = sln.Projects.Select(_projectMapper.Map).ToArray()
-        };
+            var workspace = MSBuildWorkspace.Create();
+            var sln = workspace.OpenSolutionAsync(path).GetAwaiter().GetResult();
+            var solution = new Solution
+            {
+                FullName = sln.FilePath,
+                Children = sln.Projects.Select(_projectMapper.Map).Cast<ICodePart>().ToList()
+            };
+            _workspace.Register(solution);
+            return solution;
+        }
     }
 }

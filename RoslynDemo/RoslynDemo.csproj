@@ -143,13 +143,10 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Extensions\EntityBaseExtensions.cs" />
-    <Compile Include="Mappers\ClassEntityMapper.cs" />
-    <Compile Include="Mappers\MethodEntityMapper.cs" />
-    <Compile Include="Mappers\ProjectEntityMapper.cs" />
-    <Compile Include="Mappers\SolutionEntityMapper.cs" />
-    <Compile Include="Patterns\SqlCommandExecutionScanner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlCommandCall.cs" />
+    <Compile Include="SqlCommandExecutionPostProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

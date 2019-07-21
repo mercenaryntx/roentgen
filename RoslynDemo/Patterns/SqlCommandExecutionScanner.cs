@@ -14,8 +14,6 @@ namespace RoslynDemo.Patterns
     //TODO: 99% of this could go to a base class or something
     public class SqlCommandExecutionScanner : IDependencyScanner
     {
-        private readonly FindVariableVisitor _findVariableVisitor = new FindVariableVisitor();
-        private readonly FindLiteralVisitor _findLiteralVisitor = new FindLiteralVisitor();
 
         public string[] MethodCall { get; } =
         {

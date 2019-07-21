@@ -1,89 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
-using Neurotoxin.ScOut.Filtering;
+using Microsoft.CodeAnalysis.CSharp;
+using Neurotoxin.ScOut.Analysis;
 using Neurotoxin.ScOut.Models;
-using Project = Neurotoxin.ScOut.Models.Project;
+using Neurotoxin.ScOut.Visitors;
 
 namespace Neurotoxin.ScOut.Mappers
 {
-    public class ProjectMapper : IMapper<Microsoft.CodeAnalysis.Project, Project>
+    public class ProjectMapper : IProjectMapper
     {
-        private readonly ISourceFileMapper _sourceFileMapper;
-        private readonly ITargetFrameworkMapper _targetFrameworkMapper;
-        private readonly Dictionary<string, string> _includeRules;
-        private readonly Dictionary<string, string> _excludeRules;
+        private readonly ExcludingRules _excludingRules;
+        private readonly AnalysisWorkspace _workspace;
 
-        public ProjectMapper(ISourceFileMapper sourceFileMapper, ITargetFrameworkMapper targetFrameworkMapper, ISourceFileFiltering rules)
+        public ProjectMapper(ExcludingRules excludingRules, AnalysisWorkspace workspace)
         {
-            _sourceFileMapper = sourceFileMapper;
-            _targetFrameworkMapper = targetFrameworkMapper;
-            _includeRules = rules.IncludeRules;
-            _excludeRules = rules.ExcludeRules;
+            _excludingRules = excludingRules;
+            _workspace = workspace;
         }
 
         public Project Map(Microsoft.CodeAnalysis.Project proj)
         {
-            throw new NotSupportedException();
-            //var compilation = proj.GetCompilationAsync().GetAwaiter().GetResult();
-            //var trees = compilation.SyntaxTrees;
-            //var sourceFiles = trees.Where(Included).Where(NotExcluded).Select(t => _sourceFileMapper.Map(t, compilation));
+            var compilation = proj.GetCompilationAsync().GetAwaiter().GetResult();
+            var trees = compilation.SyntaxTrees.ToArray();
+            var sourceFiles = trees
+                .Where(t => Path.GetExtension(t.FilePath) == ".cs")
+                .Where(t => _excludingRules.ExcludeFiles.All(r => !new Regex(r).IsMatch(t.FilePath)));
 
-            //return new Project
-            //{
-            //    Path = proj.FilePath,
-            //    Language = proj.Language,
-            //    LanguageVersion = proj.ParseOptions.Language,
-            //    TargetFramework = _targetFrameworkMapper.Map(trees),
-            //    Classes = FlattenClasses(sourceFiles)
-            //};
+            return new Project
+            {
+                FullName = proj.FilePath,
+                Language = MapCSharpVersion(proj),
+                TargetFramework = MapTargetFramework(proj),
+                Children = sourceFiles.Select(file => new SourceFileVisitor().Discover(file, compilation)).ToList()
+            };
         }
 
-        //private static Dictionary<string, Class> FlattenClasses(IEnumerable<SourceFile> sourceFiles)
-        //{
-        //    return sourceFiles.SelectMany(file => file.Classes.Select(c => new
-        //                            {
-        //                                Class = c,
-        //                                File = file,
-        //                            }))
-        //                      .GroupBy(t => t.Class.FullName)
-        //                      .Select(g =>
-        //                          {
-        //                              var first = g.First();
-        //                              var fc = first.Class;
-        //                              if (g.Count() == 1)
-        //                              {
-        //                                  fc.SourceFiles = new[] { first.File.Path };
-        //                                  fc.IsGenerated = first.File.IsGenerated;
-        //                                  return fc;
-        //                              }
-        //                              return new Class
-        //                              {
-        //                                  Model = fc.Model,
-        //                                  Length = g.Sum(v => v.Class.Length),
-        //                                  Loc = g.Sum(v => v.Class.Length),
-        //                                  IsGenerated = g.Any(v => v.File.IsGenerated),
-        //                                  SourceFiles = g.Select(v => v.File.Path).ToArray(),
-        //                                  Symbols = g.Select(v => v.Class.Symbol).ToArray(),
-        //                                  Properties = g.SelectMany(v => v.Class.Properties).ToDictionary(p => p.Key, p => p.Value),
-        //                                  Methods = g.SelectMany(v => v.Class.Methods.SelectMany(m => m.Value)).GroupBy(m => m.Name).ToDictionary(gg => gg.Key, gg => gg.ToArray())
-        //                              };
-        //                          })
-        //                      .ToDictionary(c => c.FullName, c => c);
-        //}
+        private static string MapCSharpVersion(Microsoft.CodeAnalysis.Project proj)
+        {
+            //TODO: double check that this returns the right C# version
+            var parseOptions = (CSharpParseOptions) proj.ParseOptions;
+            var version = parseOptions.LanguageVersion.ToString();
+            var m = new Regex(@"CSharp(?<major>\d)(?:_(?<minor>\d))?").Match(version);
+            if (!m.Success) return version;
 
-        //private bool Included(SyntaxTree tree)
-        //{
-        //    return _includeRules.Values.Any(r => new Regex(r).IsMatch(tree.FilePath));
-        //}
+            var major = m.Groups["major"].Value;
+            var minor = string.IsNullOrEmpty(m.Groups["minor"].Value) ? "0" : m.Groups["minor"].Value;
+            return $"C# {major}.{minor}";
+        }
 
-
-        //private bool NotExcluded(SyntaxTree tree)
-        //{
-        //    return _excludeRules.Values.All(r => !new Regex(r).IsMatch(tree.FilePath));
-        //}
-
+        private static string MapTargetFramework(Microsoft.CodeAnalysis.Project proj)
+        {
+            var mscorlibVersion = new Regex(@"v([\d\.]+)\\.*?mscorlib\.dll$");
+            var frameworkVersion = proj.MetadataReferences.Select(m => mscorlibVersion.Match(m.Display)).FirstOrDefault(m => m.Success)?.Groups[1].Value;
+            return frameworkVersion != null ? $".NET Framework {frameworkVersion}" : null;
+        }
     }
 }
