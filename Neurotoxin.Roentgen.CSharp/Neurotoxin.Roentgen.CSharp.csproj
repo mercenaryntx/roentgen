@@ -5,15 +5,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CCF43F8B-F413-4E26-ABC3-2BCF536C74EE}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>EfTestApp</RootNamespace>
-    <AssemblyName>Roentgen</AssemblyName>
+    <ProjectGuid>{B57A5BB0-FDE9-4F4F-853B-DE51246D3588}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Neurotoxin.Roentgen.CSharp</RootNamespace>
+    <AssemblyName>Neurotoxin.Roentgen.CSharp</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -36,18 +35,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=4.9.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.9.2\lib\net45\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Locator, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9dff12846e04bfbd, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Build.Locator.1.2.2\lib\net46\Microsoft.Build.Locator.dll</HintPath>
@@ -73,9 +66,6 @@
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Workspaces.MSBuild.3.1.0\lib\net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.SqlServer.TransactSql.ScriptDom, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.SqlServer.TransactSql.ScriptDom.15.0.4200.1\lib\net40\Microsoft.SqlServer.TransactSql.ScriptDom.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.Setup.Configuration.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.1.16.30\lib\net35\Microsoft.VisualStudio.Setup.Configuration.Interop.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -87,7 +77,6 @@
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
     </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Composition.AttributedModel, Version=1.0.31.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Composition.AttributedModel.1.0.31\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
     </Reference>
@@ -144,40 +133,47 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analysis\SqlMatch.cs" />
-    <Compile Include="Application.cs" />
-    <Compile Include="EntityMapper.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Analysis\AnalysisResult.cs" />
+    <Compile Include="Analysis\AnalysisWorkspace.cs" />
+    <Compile Include="Analysis\ChildLink.cs" />
+    <Compile Include="Analysis\LinkBase.cs" />
+    <Compile Include="Analysis\ExcludingRules.cs" />
+    <Compile Include="Analysis\LogLevel.cs" />
+    <Compile Include="Analysis\LogMessage.cs" />
+    <Compile Include="Analysis\WorkspaceLogger.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\SyntaxNodeExtensions.cs" />
+    <Compile Include="Analysis\ExternalCall.cs" />
+    <Compile Include="Analysis\InternalCall.cs" />
+    <Compile Include="Mappers\IProjectMapper.cs" />
+    <Compile Include="Mappers\ISolutionMapper.cs" />
+    <Compile Include="Mappers\ProjectMapper.cs" />
+    <Compile Include="Mappers\SolutionMapper.cs" />
+    <Compile Include="PostProcessors\MethodInvocationsFinder.cs" />
+    <Compile Include="Models\Class.cs" />
+    <Compile Include="Models\ClassType.cs" />
+    <Compile Include="Models\FileCodePart.cs" />
+    <Compile Include="Models\SyntaxCodePart.cs" />
+    <Compile Include="Models\ICodePart.cs" />
+    <Compile Include="Models\Method.cs" />
+    <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\Property.cs" />
+    <Compile Include="Models\Solution.cs" />
+    <Compile Include="Models\SourceFile.cs" />
+    <Compile Include="PostProcessors\PostProcessorBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Analysis\SqlCommandCall.cs" />
-    <Compile Include="Analysis\SqlCommandExecutionFinder.cs" />
-    <Compile Include="RelationMapper.cs" />
+    <Compile Include="RoslynAnalyzer.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="Analysis\UnknownCall.cs" />
+    <Compile Include="Visitors\FindLiteralVisitor.cs" />
+    <Compile Include="Visitors\FindVariableVisitor.cs" />
+    <Compile Include="Visitors\SourceFileVisitor.cs" />
+    <Compile Include="Visitors\VisitorBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Neurotoxin.Roentgen.CSharp\Neurotoxin.Roentgen.CSharp.csproj">
-      <Project>{b57a5bb0-fde9-4f4f-853b-de51246d3588}</Project>
-      <Name>Neurotoxin.Roentgen.CSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Neurotoxin.Roentgen.Data\Neurotoxin.Roentgen.Data.csproj">
-      <Project>{0c950f50-e198-4704-9085-3853506b5c0f}</Project>
-      <Name>Neurotoxin.Roentgen.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Neurotoxin.Roentgen.Sql\Neurotoxin.Roentgen.Sql.csproj">
-      <Project>{df56dded-7026-4a77-872b-c899baa623a1}</Project>
-      <Name>Neurotoxin.Roentgen.Sql</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+    <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

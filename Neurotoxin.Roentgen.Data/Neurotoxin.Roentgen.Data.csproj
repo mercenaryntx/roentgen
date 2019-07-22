@@ -56,10 +56,12 @@
     <Compile Include="Attributes\DisplayTextAttribute.cs" />
     <Compile Include="Attributes\IconAttribute.cs" />
     <Compile Include="Constants\AccessStrategies.cs" />
+    <Compile Include="Constants\ClassType.cs" />
     <Compile Include="Constants\ComponentType.cs" />
     <Compile Include="Constants\DataFormats.cs" />
     <Compile Include="Constants\FcpScopeType.cs" />
     <Compile Include="Constants\LogicalSystems.cs" />
+    <Compile Include="Constants\QueryType.cs" />
     <Compile Include="Constants\SecurityTypes.cs" />
     <Compile Include="Constants\SourceControlType.cs" />
     <Compile Include="Constants\TransportTypes.cs" />

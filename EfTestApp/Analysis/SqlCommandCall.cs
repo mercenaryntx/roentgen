@@ -1,5 +1,5 @@
-﻿using Neurotoxin.Roentgen.Analysis;
-using Neurotoxin.Roentgen.Models;
+﻿using Neurotoxin.Roentgen.CSharp.Analysis;
+using Neurotoxin.Roentgen.CSharp.Models;
 
 namespace EfTestApp.Analysis
 {

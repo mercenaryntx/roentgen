@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Neurotoxin.Roentgen.Data.Attributes;
+using Neurotoxin.Roentgen.Data.Constants;
 
 namespace Neurotoxin.Roentgen.Data.Entities
 {
@@ -7,6 +8,6 @@ namespace Neurotoxin.Roentgen.Data.Entities
     [DisplayName("Class")]
     public class ClassEntity: CodeEntityBase
     {
-        public bool IsGenerated { get; set; }
+        public ClassType ClassType { get; set; }
     }
 }
