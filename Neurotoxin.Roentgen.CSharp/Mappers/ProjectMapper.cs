@@ -2,10 +2,9 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using Autofac;
-using Microsoft.CodeAnalysis.CSharp;
-using Neurotoxin.Roentgen.CSharp.Analysis;
-using Neurotoxin.Roentgen.CSharp.Models;
-using Neurotoxin.Roentgen.CSharp.Visitors;
+using Neurotoxin.Roentgen.Analysis;
+using Neurotoxin.Roentgen.Visitors;
+using Neurotoxin.Roentgen.Models;
 
 namespace Neurotoxin.Roentgen.CSharp.Mappers
 {
@@ -32,27 +31,10 @@ namespace Neurotoxin.Roentgen.CSharp.Mappers
             return new Project
             {
                 FullName = proj.FilePath,
-                Language = MapCSharpVersion(proj),
+                Language = proj.Language,
                 TargetFramework = MapTargetFramework(proj),
                 Children = sourceFiles.Select(file => _lifetimeScope.Resolve<SourceFileVisitor>().Discover(file, compilation)).ToList()
             };
-        }
-
-        private string MapCSharpVersion(Microsoft.CodeAnalysis.Project proj)
-        {
-            //TODO: double check that this returns the right C# version
-            var parseOptions = (CSharpParseOptions) proj.ParseOptions;
-            var version = parseOptions.LanguageVersion.ToString();
-            var m = new Regex(@"CSharp(?<major>\d)(?:_(?<minor>\d))?").Match(version);
-            if (!m.Success)
-            {
-                _logger.Warning($"C# version of the following project couldn't be determnined: {proj.FilePath}");
-                return version;
-            }
-
-            var major = m.Groups["major"].Value;
-            var minor = string.IsNullOrEmpty(m.Groups["minor"].Value) ? "0" : m.Groups["minor"].Value;
-            return $"C# {major}.{minor}";
         }
 
         private string MapTargetFramework(Microsoft.CodeAnalysis.Project proj)
