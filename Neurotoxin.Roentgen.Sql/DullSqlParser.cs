@@ -31,7 +31,7 @@ namespace Neurotoxin.Roentgen.Sql
                 if (queryType == QueryType.Unknown) continue;
 
                 var targets = new HashSet<string>();
-                var collect = false;
+                var collect = previous.Text == "UPDATE";
                 string tmp = null;
 
                 foreach (var token in tokens.Skip(1))

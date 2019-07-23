@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Dapper;
 using EfTestApp.Analysis;
 using Neurotoxin.Roentgen.CSharp;
@@ -33,7 +32,7 @@ namespace EfTestApp
                 @"e:\Work\EF\github\elektra-wpf-ls\EFLT.EO.sln",
                 @"e:\Work\EF\github\elektra-services-restapi\ElektraProjects.sln",
                 @"e:\Work\EF\github\elektra-ls-hfvisitapp\HFVisitApp\ElektraService.sln",
-                //@"e:\Work\EF\github\elektra-wpf-lt\EFLT.EO.sln",
+                @"e:\Work\EF\github\elektra-wpf-lt\EFLT.EO.sln",
                 @"e:\Work\EF\github\elektra-ls-studentidcard\EF.Language.Elektra\EFLT.Elektra.sln",
                 @"e:\Work\EF\github\Poseidon-EFSMSApp\EFSMSApp.sln",
                 @"e:\Work\EF\github\elektra-wpf-rti\AccommodationStatus\AccommodationStatus.sln",
@@ -48,13 +47,13 @@ namespace EfTestApp
                 Console.WriteLine($"[{sw.Elapsed}] Analyzing {path}...");
                 var result = new RoslynAnalyzer()
                     .AddSolution(path)
-                    //.RegisterPostProcessor<MethodInvocationsFinder>()
-                    //.RegisterPostProcessor<SqlCommandExecutionFinder>()
+                    .RegisterPostProcessor<MethodInvocationsFinder>()
+                    .RegisterPostProcessor<SqlCommandExecutionFinder>()
                     .Analyze();
                 Console.WriteLine($"[{sw.Elapsed}] Solution analyzed.");
 
-                //Persist(result);
-                //Console.WriteLine($"[{sw.Elapsed}] Data persisted.");
+                Persist(result);
+                Console.WriteLine($"[{sw.Elapsed}] Data persisted.");
             }
         }
 
