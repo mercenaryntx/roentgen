@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using Autofac;
-using Neurotoxin.Roentgen.Analysis;
-using Neurotoxin.Roentgen.Visitors;
-using Neurotoxin.Roentgen.Models;
+using Neurotoxin.Roentgen.CSharp.Analysis;
+using Neurotoxin.Roentgen.CSharp.Visitors;
+using Neurotoxin.Roentgen.CSharp.Models;
 
 namespace Neurotoxin.Roentgen.CSharp.Mappers
 {
