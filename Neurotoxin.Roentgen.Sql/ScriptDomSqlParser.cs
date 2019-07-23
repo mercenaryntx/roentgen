@@ -10,7 +10,7 @@ using Neurotoxin.Roentgen.Sql.Extensions;
 namespace Neurotoxin.Roentgen.Sql
 {
     //TODO: refactor
-    public class SqlParser : TSqlFragmentVisitor
+    public class ScriptDomSqlParser : TSqlFragmentVisitor
     {
         public IList<ParseError> Errors { get; private set; }
         public List<SqlParserResult> Result { get; private set; }
@@ -121,9 +121,9 @@ namespace Neurotoxin.Roentgen.Sql
             StoreResult(result);
         }
 
-        public static SqlParser Parse(string sqlText)
+        public static ScriptDomSqlParser Parse(string sqlText)
         {
-            var visitor = new SqlParser();
+            var visitor = new ScriptDomSqlParser();
             var parser = new TSql120Parser(true);
             using (var txtReader = new StringReader(sqlText))
             {

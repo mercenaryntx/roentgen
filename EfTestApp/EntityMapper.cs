@@ -40,7 +40,7 @@ namespace EfTestApp
         {
             entity.EntityId = Guid.NewGuid();
             entity.CreatedOn = DateTime.UtcNow;
-            entity.CreatedBy = "Zsolt_Bangha@epam.com";
+            entity.CreatedBy = @"BUDAPEST\Zsolt_Bangha";
             return entity;
         }
     }

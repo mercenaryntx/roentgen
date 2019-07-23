@@ -1,4 +1,4 @@
-﻿namespace Neurotoxin.Roentgen.Data.Constants
+﻿namespace Neurotoxin.Roentgen.Sql
 {
     public enum QueryType
     {

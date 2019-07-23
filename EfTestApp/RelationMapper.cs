@@ -11,11 +11,13 @@ using Neurotoxin.Roentgen.Data.Constants;
 using Neurotoxin.Roentgen.Data.Entities;
 using Neurotoxin.Roentgen.Data.Relations;
 using Neurotoxin.Roentgen.Sql;
+using TSQL;
 
 namespace EfTestApp
 {
     public class RelationMapper
     {
+        private readonly DullSqlParser _sqlParser = new DullSqlParser();
         private readonly Dictionary<ICodePart, Guid> _modelToEntityId = new Dictionary<ICodePart, Guid>();
         private readonly List<EntityBase> _entities = new List<EntityBase>();
 
@@ -35,7 +37,10 @@ namespace EfTestApp
             switch (link)
             {
                 case ChildLink childLink:
-                    yield return MapDefault<ParentChildRelation>(_modelToEntityId[childLink.Parent], _modelToEntityId[childLink.Child]);
+                    if (_modelToEntityId.ContainsKey(childLink.Parent) && _modelToEntityId.ContainsKey(childLink.Child))
+                    {
+                        yield return MapDefault<ParentChildRelation>(_modelToEntityId[childLink.Parent], _modelToEntityId[childLink.Child]);
+                    }
                     break;
                 case InternalCall internalCall:
                     yield return MapDefault<CallRelation>(_modelToEntityId[internalCall.Caller], _modelToEntityId[internalCall.Callee]);
@@ -49,8 +54,9 @@ namespace EfTestApp
                 case ExternalCall _:
                 case UnknownCall _:
                     break;
+                default:
+                    throw new NotSupportedException("Unknown link: " + link.GetType());
             }
-            throw new NotSupportedException("Unknown link: " + link.GetType());
         }
 
         private IEnumerable<RelationBase> MapToSqlEntities(SqlCommandCall call)
@@ -61,8 +67,11 @@ namespace EfTestApp
                 foreach (var matchTarget in match.Targets)
                 {
                     var entities = _entities.Where(e => e.Name.EndsWith(matchTarget));
+                    entities = match.Type == QueryType.Call
+                        ? (IEnumerable<EntityBase>) entities.OfType<StoredProcedureEntity>()
+                        : entities.OfType<TableEntity>();
                     var x = entities.ToArray();
-                    if (x.Length > 1) Debugger.Break();
+                    if (x.Length > 2) Debugger.Break();
                     foreach (var entity in entities)
                     {
                         switch (match.Type)
@@ -90,38 +99,11 @@ namespace EfTestApp
             }
         }
 
-        private SqlMatch[] ParseSqlPart(string command)
+        private SqlMatch[] ParseSqlPart(string cmd)
         {
-            var cmd = new Regex(@"[\[\]]").Replace(command, string.Empty);
-            if (cmd.Contains(" "))
-            {
-                var parser = SqlParser.Parse(cmd);
-                return parser.Result
-                             .Select(r => new SqlMatch
-                             {
-                                 Type = MapSqlToken(r.Type),
-                                 Targets = r.Tables.ToArray()
-                             })
-                             .ToArray();
-            }
-            return new[] {new SqlMatch {Type = QueryType.Call, Targets = new[] {cmd}}};
-        }
-
-        private QueryType MapSqlToken(TSqlTokenType tokenType)
-        {
-            switch (tokenType)
-            {
-                case TSqlTokenType.Select:
-                    return QueryType.Select;
-                case TSqlTokenType.Insert:
-                    return QueryType.Insert;
-                case TSqlTokenType.Update:
-                    return QueryType.Update;
-                case TSqlTokenType.Delete:
-                    return QueryType.Delete;
-                default:
-                    throw new NotSupportedException("Not supported SQL token: " + tokenType);
-            }
+            return cmd.Contains(" ") 
+                ? _sqlParser.Parse(cmd).ToArray() 
+                : new[] {new SqlMatch {Type = QueryType.Call, Targets = new[] { new Regex(@"[\[\]]").Replace(cmd, string.Empty) } }};
         }
 
         private TRelation MapDefault<TRelation>(Guid parentEntityId, Guid childEntityId)
@@ -132,7 +114,7 @@ namespace EfTestApp
                 LeftEntityId = parentEntityId,
                 RightEntityId = childEntityId,
                 CreatedOn = DateTime.UtcNow,
-                CreatedBy = "Zsolt_Bangha@epam.com"
+                CreatedBy = @"BUDAPEST\Zsolt_Bangha"
             };
         }
     }

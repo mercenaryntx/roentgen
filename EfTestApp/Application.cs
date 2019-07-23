@@ -60,7 +60,7 @@ namespace EfTestApp
         {
             var relationMapper = new RelationMapper();
             var entities = MapEntities(result, (codePart, entity) => relationMapper.RegisterEntity(codePart, entity)).ToArray();
-            var relations = MapRelations(result, relationMapper);
+            var relations = MapRelations(result, relationMapper).ToArray();
 
             using (var db = new SqlConnection(ConfigurationManager.ConnectionStrings["TargetConnection"].ConnectionString))
             {

@@ -42,6 +42,13 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
             return left?.Identifier.ValueText == _identifier.ValueText ? assignment.Right : null;
         }
 
+        private SyntaxNode Visit(MemberAccessExpressionSyntax node)
+        {
+            return node.Name.Identifier.ValueText == _identifier.ValueText
+                ? node
+                : null;
+        }
+
         private SyntaxNode Visit(MethodDeclarationSyntax methodDeclaration)
         {
             return methodDeclaration.ParameterList.Parameters.SingleOrDefault(p => p.Identifier.ValueText == _identifier.ValueText);
@@ -54,12 +61,7 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
 
         private SyntaxNode Visit(QueryExpressionSyntax queryExpression)
         {
-            if (queryExpression.FromClause.Identifier.ValueText == _identifier.ValueText)
-            {
-                return queryExpression.FromClause.Expression;
-            }
-            Debugger.Break();
-            return null;
+            return queryExpression.FromClause.Identifier.ValueText == _identifier.ValueText ? queryExpression.FromClause.Expression : null;
         }
     }
 }

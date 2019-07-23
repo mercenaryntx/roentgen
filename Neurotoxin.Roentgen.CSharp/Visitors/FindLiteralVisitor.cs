@@ -39,6 +39,18 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
             yield return node.Token.ValueText;
         }
 
+        private IEnumerable<string> Visit(BinaryExpressionSyntax node)
+        {
+            var left = Visit(node.Left);
+            var right = Visit(node.Right);
+            return right == null ? left : left?.Concat(right);
+        }
+
+        private IEnumerable<string> Visit(MemberAccessExpressionSyntax node)
+        {
+            return node.Expression is IdentifierNameSyntax identifier ? Visit(identifier) : null;
+        }
+
         private IEnumerable<string> Visit(ParameterSyntax node)
         {
             var parameterList = node.Parent as ParameterListSyntax;
