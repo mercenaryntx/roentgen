@@ -31,7 +31,6 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
         {
             if (node == null || _visitedNodes.Contains(node)) return null;
             _visitedNodes.Add(node);
-
             return VisitTyped(node) ?? ContinueWith(node);
         }
 

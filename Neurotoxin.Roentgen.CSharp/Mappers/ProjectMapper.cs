@@ -3,8 +3,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Autofac;
 using Neurotoxin.Roentgen.CSharp.Analysis;
-using Neurotoxin.Roentgen.CSharp.Visitors;
 using Neurotoxin.Roentgen.CSharp.Models;
+using Neurotoxin.Roentgen.CSharp.Visitors;
 
 namespace Neurotoxin.Roentgen.CSharp.Mappers
 {
@@ -43,7 +43,7 @@ namespace Neurotoxin.Roentgen.CSharp.Mappers
             var frameworkVersion = proj.MetadataReferences.Select(m => mscorlibVersion.Match(m.Display)).FirstOrDefault(m => m.Success)?.Groups[1].Value;
             if (frameworkVersion != null) return $".NET Framework {frameworkVersion}";
 
-            _logger.Warning($"Target framework of the folloing project couldn't be determined: {proj.FilePath}");
+            _logger.Warning($"Target framework of the following project couldn't be determined: {proj.FilePath}");
             return null;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TSQL;
 using TSQL.Tokens;
 
@@ -23,14 +24,16 @@ namespace Neurotoxin.Roentgen.Sql
 
         public IEnumerable<SqlMatch> Parse(string sqlText)
         {
-            foreach (var tokens in TSQLStatementReader.ParseStatements(sqlText).Select(s => s.Tokens))
+            foreach (var tokens in TSQLStatementReader.ParseStatements(CleanUp(sqlText)).Select(s => s.Tokens))
             {
+                var previous = tokens.First();
+                var queryType = GetQueryType(previous);
+                if (queryType == QueryType.Unknown) continue;
+
                 var targets = new HashSet<string>();
                 var collect = false;
                 string tmp = null;
 
-                var previous = tokens.First();
-                var queryType = GetQueryType(previous);
                 foreach (var token in tokens.Skip(1))
                 {
                     switch (token)
@@ -45,13 +48,15 @@ namespace Neurotoxin.Roentgen.Sql
                             break;
                         case TSQLIdentifier identifier:
                             if (!collect || _ignore.Contains(identifier.Text, StringComparer.InvariantCultureIgnoreCase)) continue;
-                            if (previous is TSQLIdentifier)
+                            if (previous.Text == ".")
                             {
-                                targets.Add(tmp);
-                                tmp = null;
-                                continue;
+                                tmp += $".{identifier.Name}";
                             }
-                            tmp = previous.Text == "." ? $"{tmp}.{identifier.Name}" : identifier.Name;
+                            else
+                            {
+                                if (tmp != null) targets.Add(tmp);
+                                tmp = previous is TSQLIdentifier ? null : identifier.Name;
+                            }
                             break;
                     }
                     previous = token;
@@ -65,10 +70,19 @@ namespace Neurotoxin.Roentgen.Sql
             }
         }
 
-        private static QueryType GetQueryType(TSQLToken previous)
+        private static string CleanUp(string sql)
+        {
+            var cteHack = new Regex(@"^;?WITH .*? AS \(\s+(?=SELECT)", RegexOptions.IgnoreCase);
+            var nolock = new Regex(@"(with )?\(nolock\)", RegexOptions.IgnoreCase);
+            sql = cteHack.Replace(sql, string.Empty);
+            sql = nolock.Replace(sql, string.Empty);
+            return sql.Replace(" UNION ", string.Empty);
+        }
+
+        private static QueryType GetQueryType(TSQLToken token)
         {
             QueryType queryType;
-            switch (previous.Text.ToUpper())
+            switch (token.Text.ToUpper())
             {
                 case "SELECT":
                     queryType = QueryType.Select;
@@ -83,7 +97,7 @@ namespace Neurotoxin.Roentgen.Sql
                     queryType = QueryType.Delete;
                     break;
                 default:
-                    throw new NotSupportedException("Invalid SQL statement: " + previous.Text);
+                    return QueryType.Unknown;
             }
 
             return queryType;

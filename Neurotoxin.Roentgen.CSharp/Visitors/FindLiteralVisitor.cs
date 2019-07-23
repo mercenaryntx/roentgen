@@ -36,14 +36,16 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
 
         private IEnumerable<string> Visit(LiteralExpressionSyntax node)
         {
-            yield return node.Token.ValueText;
+            if (!string.IsNullOrWhiteSpace(node.Token.ValueText)) yield return node.Token.ValueText;
         }
 
         private IEnumerable<string> Visit(BinaryExpressionSyntax node)
         {
-            var left = Visit(node.Left);
-            var right = Visit(node.Right);
-            return right == null ? left : left?.Concat(right);
+            var left = Visit(node.Left)?.ToArray();
+            var right = Visit(node.Right)?.ToArray();
+
+            var concat = right == null ? left : left?.Concat(right) ?? right;
+            if (concat != null) yield return string.Join(string.Empty, concat);
         }
 
         private IEnumerable<string> Visit(MemberAccessExpressionSyntax node)

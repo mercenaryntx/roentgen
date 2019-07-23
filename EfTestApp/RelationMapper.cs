@@ -66,12 +66,13 @@ namespace EfTestApp
             {
                 foreach (var matchTarget in match.Targets)
                 {
-                    var entities = _entities.Where(e => e.Name.EndsWith(matchTarget));
+                    var identifier = matchTarget.Contains(".") ? matchTarget : ".dbo." + matchTarget;
+                    var entities = _entities.Where(e => e.Name.EndsWith(identifier));
                     entities = match.Type == QueryType.Call
                         ? (IEnumerable<EntityBase>) entities.OfType<StoredProcedureEntity>()
                         : entities.OfType<TableEntity>();
                     var x = entities.ToArray();
-                    if (x.Length > 2) Debugger.Break();
+                    if (x.Length > 3) Debugger.Break();
                     foreach (var entity in entities)
                     {
                         switch (match.Type)
@@ -101,9 +102,10 @@ namespace EfTestApp
 
         private SqlMatch[] ParseSqlPart(string cmd)
         {
+            cmd = new Regex(@"[\[\]]").Replace(cmd, string.Empty).Trim();
             return cmd.Contains(" ") 
                 ? _sqlParser.Parse(cmd).ToArray() 
-                : new[] {new SqlMatch {Type = QueryType.Call, Targets = new[] { new Regex(@"[\[\]]").Replace(cmd, string.Empty) } }};
+                : new[] {new SqlMatch {Type = QueryType.Call, Targets = new[] { cmd } }};
         }
 
         private TRelation MapDefault<TRelation>(Guid parentEntityId, Guid childEntityId)
