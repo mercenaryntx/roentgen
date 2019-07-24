@@ -10,6 +10,10 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
     {
         private SyntaxToken _identifier;
 
+        public FindVariableVisitor(ILogger<FindVariableVisitor> logger) : base(logger)
+        {
+        }
+
         public SyntaxNode FindVariable(SyntaxNode node, SyntaxToken identifier)
         {
             _identifier = identifier;

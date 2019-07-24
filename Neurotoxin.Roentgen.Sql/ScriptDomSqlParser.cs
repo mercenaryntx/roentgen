@@ -10,6 +10,7 @@ using Neurotoxin.Roentgen.Sql.Extensions;
 namespace Neurotoxin.Roentgen.Sql
 {
     //TODO: refactor
+    [Obsolete]
     public class ScriptDomSqlParser : TSqlFragmentVisitor
     {
         public IList<ParseError> Errors { get; private set; }

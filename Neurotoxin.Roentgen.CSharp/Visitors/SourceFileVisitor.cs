@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,6 +10,10 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
     {
         private SemanticModel _model;
         private bool _isGenerated;
+
+        public SourceFileVisitor(ILogger<SourceFileVisitor> logger) : base(logger)
+        {
+        }
 
         public ICodePart Discover(SyntaxTree tree, Compilation compilation)
         {

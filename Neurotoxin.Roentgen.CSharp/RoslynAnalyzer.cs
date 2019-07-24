@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using Autofac.Core;
@@ -57,12 +55,8 @@ namespace Neurotoxin.Roentgen.CSharp
         public AnalysisResult Analyze()
         {
             var container = BuildContainer();
-            var sw = new Stopwatch();
-            sw.Start();
-            
-            var solutionMapper = container.Resolve<ISolutionMapper>();
-            _solutions.ForEach(s => solutionMapper.Map(s));
-            Console.WriteLine($"[{sw.Elapsed}] Solution mapped."); //TODO: remove
+
+            container.Resolve<ISolutionMapper>().Map(_solutions);
 
             var postProcessorType = typeof(PostProcessorBase);
             container.ComponentRegistry
@@ -73,11 +67,7 @@ namespace Neurotoxin.Roentgen.CSharp
                      .Where(t => postProcessorType.IsAssignableFrom(t))
                      .Select(t => container.Resolve(t))
                      .Cast<PostProcessorBase>()
-                     .ForEach(pp =>
-                {
-                    pp.Process();
-                    Console.WriteLine($"[{sw.Elapsed}] {pp.GetType().Name} executed."); //TODO: remove
-                });
+                     .ForEach(pp => pp.Process());
 
             var workspace = container.Resolve<AnalysisWorkspace>();
             return new AnalysisResult

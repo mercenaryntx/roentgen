@@ -32,12 +32,13 @@ namespace Neurotoxin.Roentgen.CSharp.Analysis
                     break;
                 case SourceFile sourceFile:
                     SourceFiles.TryAdd(sourceFile.FullName, sourceFile);
+                    sourceFile.Classes.Values.ForEach(c => Register(c, parent));
                     sourceFile.Classes.Values.ForEach(c => Register(c, sourceFile));
                     break;
-                case Class @class:
-                    Classes.TryAdd(@class.FullName, @class);
-                    @class.Children.ForEach(c => Register(c, @class));
-                    @class.Implements.ForEach(interfaceName => Interfaces.TryAdd(interfaceName, @class));
+                case Class cls:
+                    Classes.TryAdd(cls.FullName, cls);
+                    cls.Children.ForEach(c => Register(c, cls));
+                    cls.Implements.ForEach(interfaceName => Interfaces.TryAdd(interfaceName, cls));
                     break;
                 case Method method:
                     Methods.TryAdd(method.FullName, method);

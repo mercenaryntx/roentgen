@@ -10,14 +10,11 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
 {
     public class FindLiteralVisitor : VisitorBase<IEnumerable<string>>
     {
-        private readonly ILogger<FindLiteralVisitor> _logger;
         private readonly FindVariableVisitor _findVariableVisitor;
         private Dictionary<MethodDeclarationSyntax, List<InvocationExpressionSyntax>> _invocations;
-        private string _prefix = "";
 
-        public FindLiteralVisitor(ILogger<FindLiteralVisitor> logger, FindVariableVisitor findVariableVisitor)
+        public FindLiteralVisitor(ILogger<FindLiteralVisitor> logger, FindVariableVisitor findVariableVisitor) : base(logger)
         {
-            _logger = logger;
             _findVariableVisitor = findVariableVisitor;
         }
 
@@ -61,7 +58,7 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
 
             if (!(parameterList?.Parent is MethodDeclarationSyntax methodDeclaration))
             {
-
+                //TODO: remove
                 Debugger.Break();
                 return null;
             }
@@ -71,8 +68,6 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
                 //TODO: log
                 return null;
             }
-
-            _prefix += "  ";
 
             return _invocations[methodDeclaration]
                 .Select(call => Visit(call.ArgumentList.Arguments[parameterIndex].Expression))
@@ -87,7 +82,7 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
             {
                 return Visit(node.ArgumentList.Arguments[1]);
             }
-            _logger.Info($"Invociation ignored: {node} ({node.GetPosition()})");
+            Logger.Info($"Invociation ignored: {node} ({node.GetPosition()})");
             return null;
         }
 

@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using EfTestApp.Analysis;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using Neurotoxin.Roentgen.CSharp.Analysis;
 using Neurotoxin.Roentgen.CSharp.Models;
-using Neurotoxin.Roentgen.Data.Constants;
 using Neurotoxin.Roentgen.Data.Entities;
 using Neurotoxin.Roentgen.Data.Relations;
 using Neurotoxin.Roentgen.Sql;
-using TSQL;
 
 namespace EfTestApp
 {
@@ -71,8 +67,6 @@ namespace EfTestApp
                     entities = match.Type == QueryType.Call
                         ? (IEnumerable<EntityBase>) entities.OfType<StoredProcedureEntity>()
                         : entities.OfType<TableEntity>();
-                    var x = entities.ToArray();
-                    if (x.Length > 3) Debugger.Break();
                     foreach (var entity in entities)
                     {
                         switch (match.Type)
@@ -93,7 +87,7 @@ namespace EfTestApp
                                 yield return MapDefault<DeleteRelation>(_modelToEntityId[call.Caller], entity.EntityId);
                                 break;
                             default:
-                                throw new NotSupportedException("Unknown query type: " + match.Type);
+                                throw new NotSupportedException("Invalid query type: " + match.Type);
                         }
                     }
                 }

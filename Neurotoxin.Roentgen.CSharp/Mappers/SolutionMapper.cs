@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis.MSBuild;
 using Neurotoxin.Roentgen.CSharp.Analysis;
 using Neurotoxin.Roentgen.CSharp.Models;
@@ -27,6 +28,11 @@ namespace Neurotoxin.Roentgen.CSharp.Mappers
             };
             _workspace.Register(solution);
             return solution;
+        }
+
+        public IEnumerable<Solution> Map(IEnumerable<string> solutions)
+        {
+            return solutions.Select(Map).ToArray();
         }
     }
 }

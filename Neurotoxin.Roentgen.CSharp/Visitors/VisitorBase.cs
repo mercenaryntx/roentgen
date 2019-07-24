@@ -11,9 +11,11 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
     {
         private readonly Dictionary<Type, MethodInfo> _visitOverloads;
         private HashSet<SyntaxNode> _visitedNodes = new HashSet<SyntaxNode>();
+        protected readonly ILogger Logger;
 
-        protected VisitorBase()
+        protected VisitorBase(ILogger logger)
         {
+            Logger = logger;
             var syntaxNodeBase = typeof(SyntaxNode);
             _visitOverloads = GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                                        .Where(m => m.Name == nameof(Visit))
@@ -37,15 +39,12 @@ namespace Neurotoxin.Roentgen.CSharp.Visitors
         protected TResult VisitTyped(SyntaxNode node)
         {
             var nodeType = node.GetType();
-            if (_visitOverloads.ContainsKey(nodeType))
-            {
-                var method = _visitOverloads[nodeType];
-                if (method.ReturnType != typeof(TResult))
-                {
-                    Debugger.Break();
-                }
-                return method.Invoke(this, new object[] {node}) as TResult;
-            }
+            if (!_visitOverloads.ContainsKey(nodeType)) return null;
+
+            var method = _visitOverloads[nodeType];
+            if (method.ReturnType == typeof(TResult)) return method.Invoke(this, new object[] { node }) as TResult;
+
+            Logger.Warning("Invalid visit node with return type: " + method.ReturnType);
             return null;
         }
 

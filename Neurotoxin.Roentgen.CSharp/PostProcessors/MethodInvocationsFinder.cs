@@ -35,6 +35,7 @@ namespace Neurotoxin.Roentgen.CSharp.PostProcessors
                         if (symbol.IsGenericMethod) symbol = symbol.OriginalDefinition;
                         if (ExcludingRules.ExcludeLibraries.Contains(symbol.ContainingType.ContainingAssembly.Name)) continue;
 
+                        //TODO: remove
                         if (!Equals(symbol.ContainingType, symbol.ContainingSymbol)) Debugger.Break();
 
                         if (Workspace.Methods.ContainsKey(symbol.ToString()))

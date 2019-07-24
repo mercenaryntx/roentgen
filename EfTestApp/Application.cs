@@ -52,6 +52,8 @@ namespace EfTestApp
                     .Analyze();
                 Console.WriteLine($"[{sw.Elapsed}] Solution analyzed.");
 
+                var x = result.Links.GroupBy(l => l.GetType().Name).ToDictionary(g => g.Key, g => g.Count());
+
                 Persist(result);
                 Console.WriteLine($"[{sw.Elapsed}] Data persisted.");
             }
@@ -61,7 +63,8 @@ namespace EfTestApp
         {
             var relationMapper = new RelationMapper();
             var entities = MapEntities(result, (codePart, entity) => relationMapper.RegisterEntity(codePart, entity)).ToArray();
-            var relations = MapRelations(result, relationMapper).ToArray();
+
+            var relations = MapRelations(result, relationMapper);
 
             using (var db = new SqlConnection(ConfigurationManager.ConnectionStrings["TargetConnection"].ConnectionString))
             {
